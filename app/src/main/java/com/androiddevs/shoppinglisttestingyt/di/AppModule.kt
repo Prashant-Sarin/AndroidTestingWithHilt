@@ -12,14 +12,15 @@ import com.androiddevs.shoppinglisttestingyt.repositories.ShoppingRepo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 object AppModule {
 
     @Singleton
@@ -45,6 +46,19 @@ object AppModule {
             .baseUrl(BASE_URL)
             .build()
             .create(PixabayApi::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideStringMessage1(): String{
+        return "String message1 from DI"
+    }
+
+    @Singleton
+    @Provides
+    @Named("Message")
+    fun provideStringMessage2(): String{
+        return "String message2 from DI"
     }
 
 }

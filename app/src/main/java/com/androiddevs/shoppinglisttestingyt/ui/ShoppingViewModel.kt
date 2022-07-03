@@ -1,9 +1,7 @@
 package com.androiddevs.shoppinglisttestingyt.ui
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.androiddevs.shoppinglisttestingyt.common.Constants
 import com.androiddevs.shoppinglisttestingyt.data.Event
@@ -11,11 +9,24 @@ import com.androiddevs.shoppinglisttestingyt.data.Resource
 import com.androiddevs.shoppinglisttestingyt.data.local.ShoppingItem
 import com.androiddevs.shoppinglisttestingyt.data.remote.responses.ImageResponse
 import com.androiddevs.shoppinglisttestingyt.repositories.ShoppingRepo
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import javax.inject.Inject
 
-class ShoppingViewModel @ViewModelInject constructor(
-    private val repository: ShoppingRepo
-) : ViewModel() {
+@HiltViewModel
+class ShoppingViewModel @Inject constructor(
+    private val repository: ShoppingRepo,
+    private val message1: String
+) : BaseViewModel() {
+
+    /**
+     * Note - Field injection only happens after init{} call
+     * */
+
+    fun printDependencies() {
+        Timber.d("viewmodel initialised: $message1 and \nMessage ->$message")
+    }
 
     val shoppingItems = repository.observeAllShoppingItems()
 
@@ -28,7 +39,8 @@ class ShoppingViewModel @ViewModelInject constructor(
     val curImageUrl: LiveData<String> = _curImageUrl
 
     private val _insertShoppingItemStatus = MutableLiveData<Event<Resource<ShoppingItem>>>()
-    val insertShoppingItemStatus: LiveData<Event<Resource<ShoppingItem>>> = _insertShoppingItemStatus
+    val insertShoppingItemStatus: LiveData<Event<Resource<ShoppingItem>>> =
+        _insertShoppingItemStatus
 
     fun setCurImageUrl(url: String) {
         _curImageUrl.postValue(url)
@@ -43,34 +55,61 @@ class ShoppingViewModel @ViewModelInject constructor(
     }
 
     fun insertShoppingItem(name: String, amountString: String, priceString: String) {
-        if(name.isEmpty() || amountString.isEmpty() || priceString.isEmpty()) {
-            _insertShoppingItemStatus.postValue(Event(Resource.error("The fields must not be empty", null)))
+        if (name.isEmpty() || amountString.isEmpty() || priceString.isEmpty()) {
+            _insertShoppingItemStatus.postValue(
+                Event(
+                    Resource.error(
+                        "The fields must not be empty",
+                        null
+                    )
+                )
+            )
             return
         }
-        if(name.length > Constants.MAX_NAME_LENGTH) {
-            _insertShoppingItemStatus.postValue(Event(Resource.error("The name of the item" +
-                    "must not exceed ${Constants.MAX_NAME_LENGTH} characters", null)))
+        if (name.length > Constants.MAX_NAME_LENGTH) {
+            _insertShoppingItemStatus.postValue(
+                Event(
+                    Resource.error(
+                        "The name of the item" +
+                                "must not exceed ${Constants.MAX_NAME_LENGTH} characters", null
+                    )
+                )
+            )
             return
         }
-        if(priceString.length > Constants.MAX_PRICE_LENGTH) {
-            _insertShoppingItemStatus.postValue(Event(Resource.error("The price of the item" +
-                    "must not exceed ${Constants.MAX_PRICE_LENGTH} characters", null)))
+        if (priceString.length > Constants.MAX_PRICE_LENGTH) {
+            _insertShoppingItemStatus.postValue(
+                Event(
+                    Resource.error(
+                        "The price of the item" +
+                                "must not exceed ${Constants.MAX_PRICE_LENGTH} characters", null
+                    )
+                )
+            )
             return
         }
         val amount = try {
             amountString.toInt()
-        } catch(e: Exception) {
-            _insertShoppingItemStatus.postValue(Event(Resource.error("Please enter a valid amount", null)))
+        } catch (e: Exception) {
+            _insertShoppingItemStatus.postValue(
+                Event(
+                    Resource.error(
+                        "Please enter a valid amount",
+                        null
+                    )
+                )
+            )
             return
         }
-        val shoppingItem = ShoppingItem(name, amount, priceString.toFloat(), _curImageUrl.value ?: "")
+        val shoppingItem =
+            ShoppingItem(name, amount, priceString.toFloat(), _curImageUrl.value ?: "")
         insertShoppingItemIntoDb(shoppingItem)
         setCurImageUrl("")
         _insertShoppingItemStatus.postValue(Event(Resource.success(shoppingItem)))
     }
 
     fun searchForImage(imageQuery: String) {
-        if(imageQuery.isEmpty()) {
+        if (imageQuery.isEmpty()) {
             return
         }
         _images.value = Event(Resource.loading(null))

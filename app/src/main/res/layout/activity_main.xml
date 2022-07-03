@@ -7,8 +7,9 @@
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/navHostFragment"
+        android:name="com.androiddevs.shoppinglisttestingyt.ui.ShoppingFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
