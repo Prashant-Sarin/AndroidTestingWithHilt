@@ -7,10 +7,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.androiddevs.shoppinglisttestingyt.R
 
 class AddShoppingItemFragment: Fragment(R.layout.fragment_add_shopping_item) {
-    lateinit var shoppingViewModel: ShoppingViewModel
+//    lateinit var shoppingViewModel: ShoppingViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        shoppingViewModel = ViewModelProvider(requireActivity()).get(ShoppingViewModel::class.java)
+//        shoppingViewModel = ViewModelProvider(requireActivity()).get(ShoppingViewModel::class.java)
     }
 }

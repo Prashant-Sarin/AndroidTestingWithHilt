@@ -19,6 +19,7 @@ class ShoppingFragment: Fragment(R.layout.fragment_shopping) {
         super.onViewCreated(view, savedInstanceState)
         shoppingViewModel.printDependencies()
 //        shoppingViewModel.insertShoppingItem("item1","20","100")
+        shoppingViewModel.initShoppingItems()
         shoppingViewModel.shoppingItems.observe(viewLifecycleOwner, Observer {
             Timber.d("shopping list = ${it}")
         })

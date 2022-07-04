@@ -9,6 +9,6 @@ import javax.inject.Named
 @HiltViewModel
 open class BaseViewModel @Inject constructor() : ViewModel() {
     @Inject @Named("Message") lateinit var message: String
-//    @Inject lateinit var repository: ShoppingRepo
+    @Inject lateinit var repository: ShoppingRepo
 
 }

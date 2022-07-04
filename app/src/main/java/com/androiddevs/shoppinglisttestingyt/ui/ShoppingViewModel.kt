@@ -16,7 +16,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ShoppingViewModel @Inject constructor(
-    private val repository: ShoppingRepo,
     private val message1: String
 ) : BaseViewModel() {
 
@@ -24,13 +23,20 @@ class ShoppingViewModel @Inject constructor(
      * Note - Field injection only happens after init{} call
      * */
 
+
+    var shoppingItems = MutableLiveData<List<ShoppingItem>>()
+
     fun printDependencies() {
         Timber.d("viewmodel initialised: $message1 and \nMessage ->$message")
     }
 
-    val shoppingItems = repository.observeAllShoppingItems()
+    fun initShoppingItems(){
+        repository.observeAllShoppingItems().observeForever {
+            shoppingItems.value = it
+        }
+    }
 
-    val totalPrice = repository.observeTotalPrice()
+//    val totalPrice = repository.observeTotalPrice()
 
     private val _images = MutableLiveData<Event<Resource<ImageResponse>>>()
     val images: LiveData<Event<Resource<ImageResponse>>> = _images
